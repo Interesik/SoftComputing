@@ -1,0 +1,347 @@
+\documentclass[12pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[T1]{polski}
+\usepackage[cp1250]{inputenc}
+\newcommand{\BibTeX}{{\sc Bib}\TeX} 
+\usepackage{graphicx}
+\usepackage{amsfonts}
+
+\setlength{\textheight}{21cm}
+
+\title{{\bf Zadanie nr 1 - uczenie i testowanie
+neuronu liniowego z wieloma wzorcami
+treningowymi}\linebreak
+Inteligentna Analiza Danych}
+\author{Karol Kazusek - 254189, Sebastian Zych - 254264}
+\date{14.10.2024}
+
+\begin{document}
+\clearpage\maketitle
+\thispagestyle{empty}
+\newpage
+\setcounter{page}{1}
+\section{Cel zadania}
+Celem zadania by³a implementacja neuronu liniowego, a nastêpnie analiza wp³ywu ró¿nych iloœci wzorców treningowych na wyniki dzia³ania neuronu. Naszym zadaniem by³o kilkukrotne przeprowadzenie algorytmu treningowego przy u¿yciu \texttt{losowych zestawów danych i startowch wag neuronwów}, a nastêpnie wyci¹gniêcie wniosków na temat jego \texttt{efektywnoœci}. Dodatkowo, celem by³o sprawdzenie, czy algorytm ucz¹cy skutecznie trenowa³ neuron na danym zbiorze treningowym oraz czy trening by³ efektywny dla ka¿dego z trzech przypadków.
+
+\section{Wstêp teoretyczny}
+Sztuczne neurony i sieci neuronowe czerpi¹ inspiracjê z natury, a konkretnie z biologicznych neuronów oraz sieci neuronowych obecnych w mózgach
+i uk³adach nerwowych ludzi i zwierz¹t. Choæ niektóre typy sztucznych sieci
+próbuj¹ naœladowaæ naturalne procesy, wiêkszoœæ wspó³czesnych rozwi¹zañ
+dzia³a na odmiennych zasadach, dostosowanych do specyficznych zadañ i
+wymagañ technicznych. Sztuczny neuron Rys. 1. jest to uproszczon¹ wersj¹
+swojego biologicznego odpowiednika, s³u¿¹c¹ do przetwarzania informacji,
+lecz jego funkcjonalnoœæ jest znacznie bardziej schematyczna ni¿ w przypadku
+naturalnych neuronów.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=12.3cm]{BudowaNeuronu.png}
+    \vspace{-0.1cm}
+    \caption{Model sztucznego neuronu}
+    \label{Model sztucznego neuronu}
+   \end{figure}\\
+Neuron ska³ada siê z: 
+Wektora wejœciowego
+\begin{equation}
+    \mathbf{x} = [x_1, x_2, \dots, x_N]
+\end{equation}
+i wag
+\begin{equation}
+    \mathbf{w} = [w_1, w_2, \dots, w_N]
+\end{equation}
+Wyjœcie jest obliczane przy pomocy wzoru:
+\begin{equation}
+    \sum_{i=1}^{N} w_i x_i = w_1 x_1 + w_2 x_2 + \dots + w_N x_N = y
+\end{equation}
+gdzie:
+\begin{itemize}
+    \item $y$ - wyjœcie neuronu,
+    \item $w_i$ - $i$-ta waga,
+    \item $x_i$ - $i$-te wejœcie,
+    \item $n$ - liczba wejœæ.
+\end{itemize}
+Jako funkcjê aktywacji wykorzystamy funkcjê liniow¹ o postaci:
+\begin{equation}
+    f(x) = a \cdot x
+\end{equation}
+Neuron o takiej charakterystyce nazywamy Neuronem liniowy Rys. 2. to jeden z \texttt{najprostszych} typów sztucznych neuronów. Jego dzia³anie polega na obliczeniu sumy wa¿onej wejœæ (sygna³ów).
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=9.3cm]{NuronLiniowy.png}
+    \vspace{-0.1cm}
+    \caption{Model sztucznego neuronu liniowego}
+    \label{Model neuronu linowego}
+   \end{figure}
+
+
+
+\section{Eksperymenty i wyniki}
+
+\subsection{Eksperyment nr 1}
+\subsubsection{Za³o¿enia}
+Analiza wektora wag neuronu w kontekœcie wielokrotnego zastosowania algorytmu treningowego, w którym liczba wag neuronu $N$ jest mniejsza ni¿ liczba próbek treningowych $M$ (czyli $N < M$).
+
+\begin{table}[h!]
+    \centering
+    \caption{Za³o¿enia parametrów wyjœciowych - eksperyment nr 1}
+    \vspace{0.2cm}
+    \begin{tabular}{c c}
+    \hline\hline\\[-0.4cm]
+    \textbf{Parametr} & \textbf{Wartoœæ} \\ \hline
+    Liczba wag neuronu (N) & 5 \\
+    Liczba wzorców treningowych (M) & 10 \\
+    Zakres wartoœci wag neuronu & [-1, 1] \\
+    Liczba epok (K) & 14000 \\
+    Krok treningowy & 0.8 \\
+    \end{tabular}
+    \end{table}
+
+    \begin{table}[h!]
+        \caption{Za³o¿enia wag dla eksperymentu nr 1}
+        \centering
+        \vspace{0.2cm}
+        \begin{tabular}{c c}
+         \hline\hline\\[-0.4cm]
+         \textbf{Neruron} & \textbf{Wagi pocz¹tkowe neuronu}\\[0.1cm]
+         \hline
+         \textbf{1}&[0.7022602  0.01750665 0.79466921 0.92162914 0.90279926]\\
+         \textbf{2}&[0.41036501 0.54634851 0.1133011  0.26291431 0.10229738]\\
+         \textbf{3}&[0.35029543 0.53505635 0.51316328 0.62997295 0.84010926]\\
+         \textbf{4}&[0.09378692 0.3522956  0.81628097 0.48155047 0.33005786]\\
+         \textbf{5}&[0.97057748 0.33640186 0.21091255 0.69016781 0.7327417 ]\\ [0.1cm]
+         \hline
+        \end{tabular}
+       \end{table}
+
+\subsubsection{Przebieg}
+Algorytm treningowy dla neuronu liniowego zosta³ uruchomiony,
+korzystaj¹c z parametrów przedstawionych w Tabeli 1. Za ka¿dym razem
+wykorzystano ten sam zbiór danych treningowych wygenerowane losowo. Wartoœci wag by³y inicjowane losowo przy uruchomieniu.
+
+\newpage
+\subsubsection{Rezultat}
+
+\begin{table}[h!]
+ \caption{Rezultaty eksperymentu nr 1}
+ \centering
+ \vspace{0.2cm}
+ \begin{tabular}{c c}
+  \hline\hline\\[-0.4cm]
+  \textbf{Neruron} & \textbf{Wagi koñcowe neuronu}\\[0.1cm]
+  \hline
+  \textbf{1} &[1.10044389 5.19383826 0.27373934 1.73954117 -4.72341669] \\
+  \textbf{2} &[1.10044389 5.19383826 0.27373934 1.73954117 -4.72341669] \\
+  \textbf{3} &[1.10044389 5.19383826 0.27373934 1.73954117 -4.72341669] \\
+  \textbf{4} &[1.10044389 5.19383826 0.27373934 1.73954117 -4.72341669]\\
+  \textbf{5} &[1.10044389 5.19383826 0.27373934 1.73954117 -4.72341669]\\ [0.1cm]
+  \hline
+ \end{tabular}
+ \label{wyniki eksperymentu pierwszego}
+\end{table}
+
+\begin{table}[h!]
+    \caption{Wyniki 1 neuronu z wykorzystaniem zbioru treningowego jako wektory wejœciowe neuronu wytrenowanego: }
+    \centering
+    \vspace{0.2cm}
+    \begin{tabular}{c c c}
+     \hline\hline\\[-0.4cm]
+     \textbf{Numer przypadku} & \textbf{Klasyfikacja neurona} & \textbf{R. klasyfikacja}\\[0.1cm]
+     \hline
+     \textbf{1} & 1.62866269 & 1\\
+     \textbf{2} & 0.75101212 & 1\\
+     \textbf{3} & 0.88028287 & 0\\
+     \textbf{4} & 2.23147244 & 1\\
+     \textbf{5} & 1.40843858 & 1\\ 
+     \textbf{6} & 2.43287648 & 1\\
+     \textbf{7} & 2.78033059 & 0\\
+     \textbf{8} & 4.54720541 & 1\\
+     \textbf{9} & 4.44872991 & 0\\
+     \textbf{10} & 3.10839639 & 1\\ [0.1cm]
+     \hline
+    \end{tabular}
+    \label{wyniki eksperymentu pierwszego}
+   \end{table}
+   \newpage
+\subsection{Eksperyment nr 2}
+
+Analiza wektora wag neuronu w kontekœcie wielokrotnego zastosowania algorytmu treningowego, w którym liczba wag neuronu $N$ jest równa liczbie próbek treningowych $M$ (czyli $N = M$).
+
+\begin{table}[h!]
+    \centering
+    \caption{Za³o¿enia parametrów wyjœciowych - eksperyment nr 2}
+    \vspace{0.2cm}
+    \begin{tabular}{c c}
+    \hline\hline\\[-0.4cm]
+    \textbf{Parametr} & \textbf{Wartoœæ}\\ \hline
+    Liczba wag neuronu (N) & 5\\
+    Liczba wzorców treningowych (M) & 5\\
+    Zakres wartoœci wag neuronu & [-1, 1]\\
+    Liczba epok (K) & 14000\\
+    Krok treningowy & 0.8\\
+    \end{tabular}
+    \end{table}
+
+    \begin{table}[h!]
+        \caption{Za³o¿enia wag dla eksperymentu nr 2}
+        \centering
+        \vspace{0.2cm}
+        \begin{tabular}{c c}
+         \hline\hline\\[-0.4cm]
+         \textbf{Neruron} & \textbf{Wagi pocz¹tkowe neuronu}\\[0.1cm]
+         \hline
+         \textbf{1}&[0.25718081 0.23160417 0.12374798 0.2100194  0.43299329]\\
+         \textbf{2}&[0.9268277  0.03963894 0.59703405 0.13471647 0.06900094]\\
+         \textbf{3}&[0.30719827 0.43147593 0.11097351 0.13570207 0.27112304]\\
+         \textbf{4}&[0.63129549 0.00481451 0.72005156 0.74442693 0.73818147]\\
+         \textbf{5}&[0.23434677 0.5381695  0.76920115 0.57128691 0.6599291 ]\\ [0.1cm]
+         \hline
+        \end{tabular}
+       \end{table}
+
+\subsubsection{Przebieg}
+Algorytm treningowy dla neuronu liniowego zosta³ uruchomiony,
+korzystaj¹c z parametrów przedstawionych w Tabeli 5. Za ka¿dym razem
+wykorzystano ten sam zbiór danych treningowych wygenerowane losowo. Wartoœci wag by³y inicjowane losowo przy uruchomieniu.
+
+\newpage
+\subsubsection{Rezultat}
+
+\begin{table}[h!]
+ \caption{Rezultaty eksperymentu nr 2}
+ \centering
+ \vspace{0.2cm}
+ \begin{tabular}{c c}
+  \hline\hline\\[-0.4cm]
+  \textbf{Neruron} & \textbf{Wagi koñcowe neuronu}\\[0.1cm]
+  \hline
+  \textbf{1}&[ 1.75545992  0.72352631 -0.45735995  0.30204395 -0.62659508]\\
+  \textbf{2}&[ 1.75545992  0.72352631 -0.45735995  0.30204395 -0.62659508]\\
+  \textbf{3}&[ 1.75545992  0.72352631 -0.45735995  0.30204395 -0.62659508]\\
+  \textbf{4}&[ 1.75545992  0.72352631 -0.45735995  0.30204395 -0.62659508]\\
+  \textbf{5}&[ 1.75545992  0.72352631 -0.45735995  0.30204395 -0.62659508]\\ [0.1cm]
+  \hline
+ \end{tabular}
+ \label{wyniki eksperymentu drugiego}
+\end{table}
+
+\begin{table}[h!]
+    \caption{Wyniki 1 neuronu z wykorzystaniem zbioru treningowego jako wektory wejœciowe neuronu wytrenowanego:}
+    \centering
+    \vspace{0.2cm}
+    \begin{tabular}{c c c}
+     \hline\hline\\[-0.4cm]
+     \textbf{Numer przypadku} & \textbf{Klasyfikacja neurona} & \textbf{R. klasyfikacja}\\[0.1cm]
+     \hline
+     \textbf{1} & 1.00000000e+00 & 1\\
+     \textbf{2} & 1.00000000e+00 & 1\\
+     \textbf{3} & -4.62567283e-16 & 0\\
+     \textbf{4} & 1.00000000e+00 & 1\\
+     \textbf{5} & 1.00000000e+00 & 1\\ [0.1cm]
+     \hline
+    \end{tabular}
+    \label{wyniki eksperymentu drugiego}
+   \end{table}
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PODROZDZIA£ PT. EKSPERYMENT NR N 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Eksperyment nr 3}
+Analiza wektora wag neuronu w kontekœcie wielokrotnego zastosowania algorytmu treningowego, w którym liczba wag neuronu $N$ jest wiêksza ni¿ liczba próbek treningowych $M$ (czyli $N > M$).
+
+\begin{table}[h!]
+    \centering
+    \caption{Za³o¿enia parametrów wyjœciowych - eksperyment nr 3}
+    \vspace{0.2cm}
+    \begin{tabular}{c c}
+    \hline\hline\\[-0.4cm]
+    \textbf{Parametr} & \textbf{Wartoœæ} \\ \hline
+    Liczba wag neuronu (N) & 5 \\
+    Liczba wzorców treningowych (M) & 2 \\
+    Zakres wartoœci wag neuronu & [-1, 1] \\
+    Liczba epok (K) & 14000 \\
+    Krok treningowy & 0.8 \\
+    \end{tabular}
+    \end{table}
+
+    \begin{table}[h!]
+        \caption{Za³o¿enia wag dla eksperymentu nr 3}
+        \centering
+        \vspace{0.2cm}
+        \begin{tabular}{c c}
+         \hline\hline\\[-0.4cm]
+         \textbf{Neruron} & \textbf{Wagi pocz¹tkowe neuronu}\\[0.1cm]
+         \hline
+         \textbf{1}&[0.042668   0.24044789 0.39155331 0.72852958 0.18479858]\\
+         \textbf{2}&[0.82432786 0.08099875 0.74098371 0.63442987 0.18990254]\\
+         \textbf{3}&[0.47082526 0.67922145 0.38200882 0.77416749 0.02424662]\\
+         \textbf{4}&[0.63795142 0.32744639 0.56587628 0.52658763 0.81397631]\\
+         \textbf{5}&[0.44989125 0.83818744 0.62580719 0.2009764  0.86055305]\\ [0.1cm]
+         \hline
+        \end{tabular}
+       \end{table}
+
+\subsubsection{Przebieg}
+Algorytm treningowy dla neuronu liniowego zosta³ uruchomiony,
+korzystaj¹c z parametrów przedstawionych w Tabeli 9. Za ka¿dym razem
+wykorzystano ten sam zbiór danych treningowych wygenerowane losowo. Wartoœci wag by³y inicjowane losowo przy uruchomieniu.
+\newpage
+\subsubsection{Rezultat}
+
+\begin{table}[h!]
+ \caption{Rezultaty eksperymentu nr 3}
+ \centering
+ \vspace{0.2cm}
+ \begin{tabular}{c c}
+  \hline\hline\\[-0.4cm]
+  \textbf{Neruron} & \textbf{Wagi koñcowe neuronu}\\[0.1cm]
+  \hline
+  \textbf{1}&[0.10632304 0.80405649 0.4017791  0.45961974 0.28680895]\\
+  \textbf{2}&[0.70692232 0.59012639 0.63854747 0.09975784 0.12163089]\\
+  \textbf{3}&[0.38247018 0.85732429 0.31598488 0.5082556 -0.04300429]\\
+  \textbf{4}&[0.43267451 0.5126257  0.42481907 0.06093346 0.64003502]\\
+  \textbf{5}&[0.27104984 0.54160379 0.52762757 0.10003904 0.67356591]\\ [0.1cm]
+  \hline
+ \end{tabular}
+ \label{wyniki eksperymentu trzeciego}
+\end{table} 
+\begin{table}[h!]
+    \caption{Wyniki 1 neuronu z wykorzystaniem zbioru treningowego jako wektory wejœciowe neuronu wytrenowanego:}
+    \centering
+    \vspace{0.2cm}
+    \begin{tabular}{c c c}
+     \hline\hline\\[-0.4cm]
+     \textbf{Numer przypadku} & \textbf{Klasyfikacja neurona} & \textbf{R. klasyfikacja}\\[0.1cm]
+     \hline
+     \textbf{1} & 1 & 1\\
+     \textbf{2} & 1 & 1\\ [0.1cm]
+     \hline
+    \end{tabular}
+    \label{wyniki eksperymentu trzeciego}
+   \end{table}
+\newpage
+
+\section{Wnioski}
+
+Wnioski z przeprowadzonych eksperymentów dowodz¹, ¿e 
+
+\begin{itemize}
+    \item Na wyjœciu dla przypadku N < M wyniki znacznie ró¿ni³y siê od oczekiwanych wartoœci dla wzorców treningowych. Powód mo¿na znaleŸæ
+    w nie dostatecznej iloœci wag.
+    \item Dla przypadku N = M oraz N > M wartoœæ koñcowych wag nie s¹
+    zmienne. Oznacza to brak przeszkód w nauce wzorców oraz przewidywañ wartoœci wag. W przypadku N < M nie jest w stanie skutecznie
+    nauczyæ wzorzec. Zwraca ona ró¿ne wartoœci wag.
+    \item Da³o siê zaobserwowaæ podobieñstwo dzia³ania neuronu liniowego do
+    problemu rozwi¹zywania uk³adu równañ z wieloma niewiadomymi.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BIBLIOGRAFIA
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\renewcommand\refname{Bibliografia}
+\bibliographystyle{plain}
+\bibliography{bibliografia_wzor}
+
+\end{document}
