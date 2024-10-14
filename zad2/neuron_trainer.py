@@ -19,13 +19,13 @@ class NeuronTrainer:
     def train_neurons(self):
         for _ in range(self.steps):
             for neuron in self.neurons:
-                self.train_neruon_with_set(neuron)
+                self.train_neuron_with_set(neuron)
         pass
 
     def show_calculate_results(self):
         for training_index, training_input in enumerate(self.test_set_inputs):
             self.neurons[0].get_new_input(training_input)
-            print("result of 1 neuron for traning {} : {}, true class {}".format(training_index, self.neurons[0].calculate_output(), self.test_set_outputs[training_index]))
+            print("result of 1 neuron for training {} : {}, true class {}".format(training_index, self.neurons[0].calculate_output(), self.test_set_outputs[training_index]))
         pass
     
 
@@ -34,17 +34,16 @@ class NeuronTrainer:
             print("Weights of {} neuron : {}".format(index, neuron.weights))
         pass
 
-    def train_neruon_with_set(self, neuron: Neuron):
-        for traning_index,traning_vector in enumerate(self.training_inputs[0][0]):
-            neuron.get_new_input(inputs = traning_vector)
-            neuron.train_neuron(self.training_outputs[traning_index])
+    def train_neuron_with_set(self, neuron: Neuron):
+        for training_index, training_vector in enumerate(self.training_inputs[0]):
+            neuron.get_new_input(inputs = training_vector)
+            neuron.train_neuron(self.training_outputs[training_index])
         pass
     
     def set_other_neurons(self, neurons: list[Neuron]):
         self.neurons = neurons
         pass
 
-    @staticmethod
     def cosine_similarity(vector_a: np.ndarray, vector_b: np.ndarray) -> float:
         """Calculate cosine similarity between two vectors."""
         dot_product = np.dot(vector_a, vector_b)
@@ -52,4 +51,5 @@ class NeuronTrainer:
         norm_b = np.linalg.norm(vector_b)
         if norm_a == 0 or norm_b == 0:
             return 0.0
-        return dot_product / (norm_a * norm_b)
+        return round(dot_product / (norm_a * norm_b),3)
+
