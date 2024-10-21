@@ -2,128 +2,72 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def plot_loss(losses):
-    plt.plot(losses)
-    plt.title('Loss function')
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss')
-    plt.show()
-
-
-def sigmoid_derivative(x):
-    return x * (1 - x)
-
-
+# Sigmoid activation function
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
 
-class MultilayerPerceptron:
-    def __init__(self, input_size, hidden_size, output_size, learning_rate=0.1, epochs=10000, bias=1):
-        self.input_size = input_size
-        self.hidden_size = hidden_size
-        self.output_size = output_size
-        self.output = None
-        self.output_input = None
-        self.hidden_output = None
-        self.hidden_input = None
-        self.input = None
-        # Initialize random weights
-        self.w_hidden = np.random.randn(input_size, hidden_size)
-        self.w_output = np.random.randn(hidden_size, output_size)
-        # self.bias_hidden = np.random.randn(hidden_size)
-        # self.bias_output = np.random.randn(output_size)
+# Derivative of the sigmoid function
+def sigmoid_derivative(x):
+    return x * (1 - x)
+
+
+class MLP:
+    def __init__(self, input_neurons, hidden_neurons, output_neurons, learning_rate=0.1, bias_value=1, epochs=10000):
+        self.input_neurons = input_neurons
+        self.hidden_neurons = hidden_neurons
+        self.output_neurons = output_neurons
         self.learning_rate = learning_rate
+        self.bias_value = bias_value
         self.epochs = epochs
-        self.bias = bias
 
-        # history of weights for plots
-        self.weight_history_hidden = []
-        self.weight_history_output = []
-        self.accuracies = []
+        # Random initialization of weights
+        np.random.seed(42)
+        self.weights_input_hidden = np.random.uniform(size=(self.input_neurons, self.hidden_neurons))
+        self.weights_hidden_output = np.random.uniform(size=(self.hidden_neurons, self.output_neurons))
 
-        self.add_bias()
+        # BIAS only for the output layer, with adjustable value
+        self.bias_output = np.ones((1, self.output_neurons)) * self.bias_value
 
-    def forward(self, x):
-        self.input = x
-        # Hidden layer
-        self.hidden_input = np.dot(self.input, self.w_hidden)
-        self.hidden_output = np.dot(self.hidden_input, self.w_output[0:2])
-        # Output layer
-        self.output_input = np.dot(self.hidden_output, self.w_output)
-        self.output = sigmoid(self.output_input)
-        return self.output
+    def forward(self, inputs):
+        # Signal flow through the hidden layer (linear activation)
+        self.hidden_layer_input = np.dot(inputs, self.weights_input_hidden)
+        self.hidden_layer_output = self.hidden_layer_input  # No activation function, as it is a linear function
 
-    def add_bias(self):
-        self.w_output = np.append(self.w_output, [self.bias for _ in range(self.output_size)])
-        self.w_output = self.w_output.reshape(3, 4)
+        # Signal flow through the output layer (sigmoid activation)
+        self.output_layer_input = np.dot(self.hidden_layer_output, self.weights_hidden_output) + self.bias_output
+        self.predicted_output = sigmoid(self.output_layer_input)
 
-    def backward(self, y_true):
-        # Calculating error from output layer
-        output_error = y_true - self.output
-        output_delta = output_error * sigmoid_derivative(self.output)
+        return self.predicted_output
 
-        # Calculating error from hidden output
-        hidden_error = np.dot(output_delta, self.w_output.T)
-        hidden_delta = hidden_error * sigmoid_derivative(self.hidden_output)
+    def backward(self, inputs, expected_output):
+        # Calculate output error
+        error = expected_output - self.predicted_output
 
-        # Weights update
-        self.w_output += self.learning_rate * np.dot(self.hidden_output.reshape(-1, 1), output_delta.reshape(1, -1))
-        self.bias_output += self.learning_rate * output_delta
-        self.w_hidden += self.learning_rate * np.dot(self.input.reshape(-1, 1), hidden_delta.reshape(1, -1))
-        self.bias_hidden += self.learning_rate * hidden_delta
+        # Calculate gradient for the output layer
+        d_predicted_output = error * sigmoid_derivative(self.predicted_output)
 
-        return output_error
+        # Error for the hidden (linear) layer
+        error_hidden_layer = d_predicted_output.dot(self.weights_hidden_output.T)
+        d_hidden_layer = error_hidden_layer  # Derivative for linear function is 1
 
-    def train(self, X, y):
-        losses = []
+        # Update weights
+        self.weights_hidden_output += self.hidden_layer_output.T.dot(d_predicted_output) * self.learning_rate
+        if self.bias_value != 0:
+            self.bias_output += np.sum(d_predicted_output, axis=0, keepdims=True) * self.learning_rate
+        self.weights_input_hidden += inputs.T.dot(d_hidden_layer) * self.learning_rate
+
+    def train(self, inputs, expected_output):
+        errors = []
         for epoch in range(self.epochs):
-            loss = 0
-            correct_predictions = 0
-            for i in range(len(X)):
-                # Forward pass
-                y_pred = self.forward(X[i])
+            # Forward pass
+            self.forward(inputs)
 
-                # Backward pass
-                output_error = self.backward(y[i])
-                loss += np.mean(np.square(output_error))
+            # Backpropagation
+            self.backward(inputs, expected_output)
 
-                # Checking accuracy of prediction
-                if np.array_equal(np.round(y_pred), y[i]):
-                    correct_predictions += 1
+            # Calculate mean error
+            error = np.mean(np.abs(expected_output - self.predicted_output))
+            errors.append(error)
 
-            # calculating overall accuracy
-            accuracy = correct_predictions / len(X)
-            self.accuracies.append(accuracy)
-
-            # Adding historical weights
-            self.weight_history_hidden.append(np.copy(self.w_hidden))
-            self.weight_history_output.append(np.copy(self.w_output))
-
-            # Loss function
-            losses.append(loss / len(X))
-            if self.epochs % 1000 == 0:
-                print(f'Epoch {epoch + 1}/{self.epochs}, Loss: {loss / len(X)}, Accuracy: {accuracy}')
-
-        # Plot drawing
-        plot_loss(losses)
-        self.plot_accuracy()
-        self.plot_weights()
-
-    def plot_accuracy(self):
-        plt.plot(self.accuracies)
-        plt.title('Dokładność (Accuracy) w miarę epok')
-        plt.xlabel('Epoka')
-        plt.ylabel('Accuracy')
-        plt.show()
-
-    def plot_weights(self):
-        # Wyświetlanie wag warstwy ukrytej i wyjściowej
-        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
-        ax1.imshow(self.weight_history_hidden[-1], cmap='viridis')
-        ax1.set_title('Hidden Layer Weights')
-
-        ax2.imshow(self.weight_history_output[-1], cmap='viridis')
-        ax2.set_title('Output Layer Weights')
-
-        plt.show()
+        return errors
